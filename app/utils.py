@@ -13,21 +13,23 @@ def get_feature_importance(model, feature_names):
         coef = model.named_steps['model'].coef_[0].astype(np.float64)
         
         # Create DataFrame with feature importance metrics
-        importance_df = pd.DataFrame({
+        df_dict = {
             'Feature': feature_names,
             'Coefficient': coef,
             'Odds_Ratio': np.exp(coef)
-        })
-        
-        # Calculate absolute values for sorting
-        abs_coef = importance_df['Coefficient'].abs()
+        }
+        importance_df = pd.DataFrame(df_dict)
         
         # Sort by absolute coefficient value
-        importance_df = importance_df.loc[abs_coef.sort_values(ascending=False).index]
+        importance_df = importance_df.sort_values(
+            by='Coefficient', 
+            key=lambda x: x.abs(), 
+            ascending=False
+        )
         
         # Round numeric columns
-        importance_df['Coefficient'] = importance_df['Coefficient'].round(4)
-        importance_df['Odds_Ratio'] = importance_df['Odds_Ratio'].round(4)
+        importance_df.loc[:, 'Coefficient'] = importance_df['Coefficient'].round(4)
+        importance_df.loc[:, 'Odds_Ratio'] = importance_df['Odds_Ratio'].round(4)
         
         return importance_df
         
@@ -45,7 +47,7 @@ def plot_feature_importance(importance_df, top_n=10):
         plot_df = importance_df.head(top_n).copy()
         
         # Convert coefficient to numeric if not already
-        plot_df['Coefficient'] = pd.to_numeric(plot_df['Coefficient'], errors='coerce')
+        plot_df.loc[:, 'Coefficient'] = pd.to_numeric(plot_df['Coefficient'], errors='coerce')
         
         # Sort for plotting (actual values, not absolute)
         plot_df = plot_df.sort_values('Coefficient')
@@ -104,29 +106,28 @@ def get_feature_contributions(input_df, model, feature_names):
         # Calculate contributions (input × coefficient)
         contributions = X_transformed[0] * coef
         
-        # Create DataFrame
-        contrib_df = pd.DataFrame({
-            'Feature': pd.Series(feature_names),  # Ensure string type for features
-            'Value': pd.Series(X_transformed[0], dtype=np.float64),
-            'Coefficient': pd.Series(coef, dtype=np.float64),
-            'Contribution': pd.Series(contributions, dtype=np.float64)
-        })
-        
-        # Calculate absolute values for sorting
-        contrib_df['Abs_Contribution'] = contrib_df['Contribution'].abs()
+        # Create DataFrame with explicit numeric dtypes
+        df_dict = {
+            'Feature': np.array(feature_names),
+            'Value': X_transformed[0],
+            'Coefficient': coef,
+            'Contribution': contributions,
+            'Abs_Contribution': np.abs(contributions)
+        }
+        contrib_df = pd.DataFrame(df_dict)
         
         # Sort by absolute contribution
         contrib_df = contrib_df.sort_values('Abs_Contribution', ascending=False)
         
-        # Format numeric columns
-        contrib_df['Value'] = contrib_df['Value'].round(4)
-        contrib_df['Coefficient'] = contrib_df['Coefficient'].round(4)
-        contrib_df['Contribution'] = contrib_df['Contribution'].round(4)
+        # Round numeric columns
+        numeric_cols = ['Value', 'Coefficient', 'Contribution']
+        for col in numeric_cols:
+            contrib_df.loc[:, col] = contrib_df[col].round(4)
         
         # Select and reorder columns
-        contrib_df = contrib_df[['Feature', 'Value', 'Coefficient', 'Contribution']]
+        result_df = contrib_df[['Feature', 'Value', 'Coefficient', 'Contribution']]
         
-        return contrib_df
+        return result_df
         
     except Exception as e:
         print(f"Error in get_feature_contributions: {str(e)}")

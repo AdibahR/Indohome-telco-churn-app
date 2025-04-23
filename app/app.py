@@ -729,67 +729,52 @@ elif page == "Predict":
         # Add feature contribution analysis
         st.subheader("Feature Contributions to Prediction")
         
-        try:
-            # Get feature names after preprocessing
-            feature_names = model.named_steps['preprocessor'].get_feature_names_out()
-            
-            # Calculate individual feature contributions
-            contributions_df = get_feature_contributions(input_df, model, feature_names)
-            
-            if contributions_df.empty:
-                st.warning("Could not calculate feature contributions.")
-                st.stop()
-            
-            # Display top 10 contributions
-            st.markdown("Top 10 Most Influential Features for This Prediction:")
-            
-            # Style the dataframe
-            def color_contributions(val):
-                try:
-                    val = float(val)
-                    color = '#B2182B' if val > 0 else '#2166AC'
-                    return f'color: {color}'
-                except:
-                    return ''
-            
-            # Format and display the dataframe
-            display_df = contributions_df.head(10).copy()
-            
-            # Add percentage contribution column
-            total_abs_contrib = display_df['Contribution'].abs().sum()
-            if total_abs_contrib > 0:  # Avoid division by zero
-                display_df['Impact'] = (display_df['Contribution'].abs() / total_abs_contrib * 100).round(1).astype(str) + '%'
-            else:
-                display_df['Impact'] = '0%'
-            
-            # Reorder columns for display
-            display_df = display_df[['Feature', 'Value', 'Coefficient', 'Contribution', 'Impact']]
-            
-            # Style the dataframe
-            styled_df = display_df.style\
-                .applymap(color_contributions, subset=['Contribution'])\
-                .format({
-                    'Value': '{:.4f}',
-                    'Coefficient': '{:.4f}',
-                    'Contribution': '{:.4f}'
-                })
-            
-            st.dataframe(styled_df, use_container_width=True)
-            
-            # Add explanation
-            st.markdown("""
-            **Understanding the Results:**
-            - **Feature**: The input variable
-            - **Value**: The standardized/encoded input value
-            - **Coefficient**: The feature's weight in the model
-            - **Contribution**: Value × Coefficient (positive values increase churn probability)
-            - **Impact**: Percentage of total contribution magnitude
-            """)
-            
-        except Exception as e:
-            st.error("Error calculating feature contributions.")
-            st.exception(e)
-            print(f"Detailed error in feature contributions: {str(e)}")
+        # Get feature names after preprocessing
+        feature_names = model.named_steps['preprocessor'].get_feature_names_out()
+        
+        # Calculate individual feature contributions
+        contributions_df = get_feature_contributions(input_df, model, feature_names)
+        
+        # Display top 10 contributions
+        st.markdown("Top 10 Most Influential Features for This Prediction:")
+        
+        # Style the dataframe
+        def color_contributions(val):
+            if pd.isna(val):  # Handle NaN values
+                return ''
+            color = '#B2182B' if val > 0 else '#2166AC'
+            return f'color: {color}'
+        
+        # Format and display the dataframe
+        display_df = contributions_df.head(10).copy()
+        
+        # Add percentage contribution column
+        total_abs_contrib = display_df['Contribution'].abs().sum()
+        display_df['Impact'] = (display_df['Contribution'].abs() / total_abs_contrib * 100).round(1).astype(str) + '%'
+        
+        # Reorder columns for display
+        display_df = display_df[['Feature', 'Value', 'Coefficient', 'Contribution', 'Impact']]
+        
+        # Style the dataframe
+        styled_df = display_df.style\
+            .applymap(color_contributions, subset=['Contribution'])\
+            .format({
+                'Value': '{:.4f}',
+                'Coefficient': '{:.4f}',
+                'Contribution': '{:.4f}'
+            })
+        
+        st.dataframe(styled_df, use_container_width=True)
+        
+        # Add explanation
+        st.markdown("""
+        **Understanding the Results:**
+        - **Feature**: The input variable
+        - **Value**: The standardized/encoded input value
+        - **Coefficient**: The feature's weight in the model
+        - **Contribution**: Value × Coefficient (positive values increase churn probability)
+        - **Impact**: Percentage of total contribution magnitude
+        """)
 
 # ===================== BATCH PREDICTION =====================
 elif page == "Batch Prediction":
@@ -861,7 +846,7 @@ elif page == "Model Interpretation":
         importance_df = get_feature_importance(model, feature_names)
         
         if importance_df.empty:
-            st.error("Failed to calculate feature importance. Please check the model and data.")
+            st.error("Unable to calculate feature importance. Please check the model.")
             st.stop()
         
         # Display feature importance table
@@ -907,27 +892,22 @@ elif page == "Model Interpretation":
         st.subheader("Key Insights")
         
         # Get top positive and negative features
-        try:
-            top_pos = importance_df[importance_df['Coefficient'] > 0].head(3)
-            top_neg = importance_df[importance_df['Coefficient'] < 0].head(3)
-            
-            if not top_pos.empty:
-                st.markdown("**Top Factors Increasing Churn Risk:**")
-                for _, row in top_pos.iterrows():
-                    st.markdown(f"- **{row['Feature']}**: Increases odds of churning by {(row['Odds_Ratio']-1)*100:.1f}%")
-            
-            if not top_neg.empty:
-                st.markdown("**Top Factors Decreasing Churn Risk:**")
-                for _, row in top_neg.iterrows():
-                    st.markdown(f"- **{row['Feature']}**: Decreases odds of churning by {(1-row['Odds_Ratio'])*100:.1f}%")
-        except Exception as e:
-            st.warning("Could not generate detailed insights due to data processing error.")
-            print(f"Error generating insights: {str(e)}")
+        pos_features = importance_df[importance_df['Coefficient'] > 0]
+        neg_features = importance_df[importance_df['Coefficient'] < 0]
+        
+        if not pos_features.empty:
+            st.markdown("**Top Factors Increasing Churn Risk:**")
+            for _, row in pos_features.head(3).iterrows():
+                st.markdown(f"- **{row['Feature']}**: Increases odds of churning by {(row['Odds_Ratio']-1)*100:.1f}%")
+        
+        if not neg_features.empty:
+            st.markdown("**Top Factors Decreasing Churn Risk:**")
+            for _, row in neg_features.head(3).iterrows():
+                st.markdown(f"- **{row['Feature']}**: Decreases odds of churning by {(1-row['Odds_Ratio'])*100:.1f}%")
 
     except Exception as e:
         st.error("Error loading model interpretation data.")
         st.exception(e)
-        print(f"Detailed error in Model Interpretation: {str(e)}")
 
 # ===================== DASHBOARD =====================
 elif page == "Dashboard":
