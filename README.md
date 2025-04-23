@@ -54,32 +54,6 @@ streamlit run app/app.py
 
 ---
 
-## 📂 Project Structure
-.
-├── app/                                # Source code untuk Streamlit App
-│   ├── app.py                          # Entry point utama aplikasi web
-│   ├── utils.py                        # Fungsi utilitas seperti interpretasi koefisien
-│   └── chapter1_summary.md            # Ringkasan pemahaman bisnis dari Chapter 1
-│
-├── deployment/                         # Output hasil deployment dan konfigurasi
-│   ├── final_model_pipeline.pkl        # Pipeline model produksi (preprocessing + ADASYN + LogisticRegression)
-│   ├── final_feature_list.json         # Daftar fitur input model
-│   ├── threshold.json                  # Nilai threshold optimal (0.43)
-│   ├── pipeline_version.txt            # Metadata versi pipeline
-│   ├── X_train_df.csv                  # Data training terproses (untuk interpretasi)
-│   └── telco_customer_data.csv         # Dataset asli untuk batch prediction dan dashboard
-│
-├── Dataset_Telco Customer Churn.csv    # Dataset original Telco Customer Churn (as-is)
-├── df_analisis.csv                     # Dataset hasil eksplorasi dan analytics
-├── df_model.csv                        # Dataset siap modeling (feature engineered)
-│
-├── Logo.png                            # Logo yang digunakan dalam UI Streamlit
-├── Telco Customer Churn.ipynb          # Notebook utama eksplorasi dan modelling
-├── requirements.txt                    # Dependencies Python untuk menjalankan aplikasi
-└── README.md                           # Dokumentasi proyek
-
----
-
 ## 📈 Business Impact
 
 Using this ML system, IndoHome:
