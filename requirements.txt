@@ -3,7 +3,7 @@ scikit-learn==1.2.2
 imbalanced-learn==0.11.0
 pandas==2.2.0
 numpy>=1.24.2
-joblib==1.2.0python3.11 -m venv venv 
+joblib==1.2.0 
 matplotlib==3.6.2
 seaborn==0.12.1
 plotly==5.13.0
