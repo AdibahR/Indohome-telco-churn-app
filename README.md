@@ -62,5 +62,5 @@ Using this ML system, IndoHome:
 - Saves more than Rp1.8 Miliar compared to mass-promotion strategies
 - Targets only at-risk customers with higher precision
 
-
-<!-- Trigger redeploy untuk rebuild environment -->
+<!-- Force redeploy -->
+<!-- force redeploy to reset environment -->
