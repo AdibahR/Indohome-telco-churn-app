@@ -8,3 +8,4 @@ pandas
 wheel
 altair
 plotly
+imbalanced-learn
