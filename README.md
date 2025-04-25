@@ -24,7 +24,7 @@ This project implements an end-to-end predictive pipeline that combines data pre
 | Model               | Logistic Regression + ADASYN            |
 | Evaluation Metric   | F2-Score (recall-focused)               |
 | Optimal Threshold   | 0.43 (business-optimized)               |
-| Interpretation      | Log Odds Coefficients (not SHAP/LIME)   |
+| Interpretation      | Log Odds Coefficients                   |
 
 ---
 
