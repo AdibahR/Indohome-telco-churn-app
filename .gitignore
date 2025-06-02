@@ -1,6 +1,23 @@
-.ipynb_checkpoints/
+# Ignore virtual environments
+venv/
+.env
+
+# Python cache
 __pycache__/
+*.py[cod]
+
+# Jupyter
+.ipynb_checkpoints/
+
+# macOS
 .DS_Store
+
+# Streamlit
+.streamlit/
+
+# Binary files
+*.pyc
+
+# Optional
 *.log
 *.tmp
-.conda/
