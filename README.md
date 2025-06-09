@@ -14,6 +14,7 @@ This project develops a comprehensive **customer churn prediction system** for I
 ### 🚀 **Live Demos**
 - **🌐 [Streamlit Web Application](https://indohome-telco-churn-app-jaqqq4c38dcepxzzitrbzc.streamlit.app)** - Interactive prediction tool
 - **📊 [Tableau Dashboard](https://public.tableau.com/views/IndoHomeChurnAnalysisDashboard/Dashboard1-ExecutiveOverview?:language=en-GB&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link)** - Executive insights and analytics
+- **🖼️ [Visual Showcase](docs/visual_showcase.md)** - Complete walkthrough with screenshots and dashboard previews
 
 ---
 
